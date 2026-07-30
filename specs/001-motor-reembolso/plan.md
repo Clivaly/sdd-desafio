@@ -72,13 +72,18 @@ aquela despesa, na ordem definida na spec (seção 8).
 
 ## 4. Como a política é representada
 
-Os limites (R$60, R$80, R$250, R$100 para nota fiscal, 50% de ampliação por
-viagem) vivem em um único módulo `politica.py`, como constantes/dataclass —
-não espalhados como números mágicos dentro das funções de regra. Isso é
-deliberado: se o envelope do Dia 2 trouxer uma mudança de valor (ex.: novo
-teto) ou uma nova categoria com limite próprio, a mudança normalmente cabe
-neste único arquivo mais um ajuste pontual na função de regra correspondente
-— sem reescrever o pipeline inteiro.
+Os limites não são mais constantes no código. A política vigente é carregada de
+`envelope/politica-v4.json` e as taxas de câmbio de `envelope/cambio.json`.
+A CLI resolve o caminho do envelope e carrega a política específica do
+`colaborador.centro_custo` antes de chamar o motor. O módulo `politica.py`
+agora representa essa configuração dinâmica, e o núcleo continua sem I/O
+diretamente: ele recebe uma instância de `Politica` já carregada pelos
+adaptadores.
+
+Os limites por centro de custo, incluindo categorias adicionais como
+`representacao` e limites zero para `hospedagem` em alguns centros, vivem na
+configuração externa. Isso mantém a lógica de regra de negócio separada dos
+dados mutáveis do RH e permite que a tabela mude sem alterar o código.
 
 ## 5. Decisões técnicas
 

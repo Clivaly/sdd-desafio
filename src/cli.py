@@ -6,6 +6,7 @@ from typing import Sequence
 
 from .io_json import carregar_entrada, escrever_saida
 from .motor import calcular_resultado
+from .politica import Politica
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -42,7 +43,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
 
     colaborador, periodo, despesas = carregar_entrada(Path(args.input))
-    resultado = calcular_resultado(colaborador, periodo, despesas)
+    package_root = Path(__file__).resolve().parents[1]
+    politica_path = package_root / "envelope" / "politica-v4.json"
+    politica = (
+        Politica.carregar_por_centro_custo(politica_path, colaborador.centro_custo)
+        if politica_path.exists()
+        else Politica()
+    )
+    resultado = calcular_resultado(colaborador, periodo, despesas, politica)
     escrever_saida(resultado, Path(args.output))
     return 0
 

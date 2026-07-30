@@ -41,7 +41,8 @@ verificável para cada decisão.
 - Não interpreta texto livre do campo `descricao` para extrair quantidade de
   diárias, número de participantes ou qualquer outro dado estruturado
   (ver AMB-011).
-- Não lida com múltiplas moedas — todo valor é assumido em reais (BRL).
+- Não implementa fila de aprovação manual de itens com valor reembolsável acima
+  de R$500 neste ciclo; esses itens seguem a avaliação automática padrão.
 - Não processa múltiplos colaboradores ou múltiplos períodos numa mesma execução.
 
 ## 4. Entrada e saída
@@ -60,8 +61,12 @@ verificável para cada decisão.
 | `despesas[].categoria` | string | Categoria da despesa (`alimentacao`, `transporte_urbano`, `hospedagem` ou outra) | Sim |
 | `despesas[].descricao` | string | Texto livre, informativo | Sim |
 | `despesas[].fornecedor` | string | Nome do fornecedor/estabelecimento | Sim |
-| `despesas[].valor` | número | Valor da despesa em reais; pode ser negativo (estorno) | Sim |
+| `despesas[].valor` | número | Valor da despesa na moeda especificada ou BRL se `moeda` ausente | Sim |
+| `despesas[].moeda` | string | Código ISO 4217 da moeda da despesa (opcional, padrão BRL) | Não |
 | `despesas[].tem_nota_fiscal` | booleano | Se a despesa possui nota fiscal | Sim |
+
+**Nota:** todos os valores internos e de saída são reportados em BRL. Despesas
+em moeda estrangeira são convertidas para BRL usando a taxa da data da despesa.
 
 **Saída:** definida por mim. Estrutura e significado de cada campo:
 
@@ -212,14 +217,28 @@ parcialmente (RN-003).
 **Aceite:** `d-010` (R$480,00, descrito como "2 diárias") é reembolsado em
 R$250,00, com R$230,00 recusado por excedente.
 
----
+### RN-011 — Política por centro de custo
 
-## 6. Ambiguidades identificadas e decisões
+**Regra:** os limites de cada categoria são carregados de arquivo externo e
+variam por `colaborador.centro_custo`. A política vigente é a tabela em
+`envelope/politica-v4.json`; para centros de custo não presentes nessa tabela,
+aplica-se a seção `padrao`. Categorias só são reembolsáveis se estiverem
+definidas na política aplicada.
+**Origem:** envelope v4, item A
+**Aceite:** `e-001` e `e-006` usam limites de `CC-COMERCIAL`; `f-004` usa a
+política padrão porque `CC-SUPORTE-N2` não existe na tabela; `CC-ENG-PLATAFORMA`
+recusa hospedagem por limite zero.
 
-> **Esta seção é o coração da spec.** Uma ambiguidade resolvida no código sem
-> registro aqui conta como não resolvida.
+### RN-012 — Conversão de moeda para BRL
 
-### AMB-001 — Unidade de aplicação do limite diário ("por dia")
+**Regra:** se `despesas[].moeda` estiver presente e diferente de `BRL`, o valor
+é convertido para BRL usando a taxa correspondente à data da despesa em
+`envelope/cambio.json`. Se `moeda` estiver ausente, assume-se `BRL`. Se não
+houver taxa disponível para a data ou para a moeda, a despesa é recusada
+integralmente por `taxa de câmbio indisponível`.
+**Origem:** envelope v4, item B
+**Aceite:** `e-002` e `e-003` em EUR usam as taxas de 2026-07-14 e 2026-07-15;
+`e-005` em USD usa a taxa de 2026-07-20; `f-004` em USD usa a taxa de 2026-07-21.
 
 **Texto original do RH:** "Alimentação tem limite de R$ 60 por dia" / "Transporte
 urbano tem limite de R$ 80 por dia."
@@ -275,6 +294,46 @@ simplesmente não aplicar o benefício.
 `hospedagem` no período. Descartada porque generaliza demais (uma diária de
 hospedagem já classificaria o período inteiro como "viagem", inclusive
 despesas de dias sem hospedagem).
+
+### AMB-013 — O que significa aplicar a política padrão
+
+**Texto original do RH:** "Alguns centros de custo não têm entrada na tabela.
+Nesse caso, aplica-se a política padrão."
+**O que não está claro:** a política padrão deve ser aplicada apenas como
+fallback quando o centro de custo não existir, ou deve também influenciar
+categorias e limites em outros casos?
+**Decisão:** a política padrão é o fallback usado somente quando o centro de
+custo não consta em `envelope/politica-v4.json`. Se o centro existir, usa-se
+apenas sua configuração específica.
+**Justificativa:** a frase "aplica-se a política padrão" descreve um caminho
+default e não uma mistura de políticas; misturar limites de dois centros criaria
+comportamento ambíguo.
+**Regra afetada:** RN-011
+
+### AMB-014 — Taxa da data da despesa
+
+**Texto original do RH:** "A conversão usa a taxa da data da despesa, não a taxa
+de hoje."
+**O que não está claro:** se a taxa para aquela data estiver ausente, o que deve
+acontecer? Deve-se usar a taxa do último dia útil anterior, recusar a despesa, ou
+falhar o lote inteiro?
+**Decisão:** a despesa é recusada integralmente se não houver taxa disponível
+para a data da despesa e para a moeda informada. O lote continua a ser processado
+normalmente para as demais despesas.
+**Justificativa:** é melhor dar um resultado verificável por despesa do que falhar
+o lote inteiro por dados faltantes de câmbio.
+**Regra afetada:** RN-012
+
+### AMB-015 — Moeda ausente assume BRL
+
+**Texto original do RH:** "Quando ausente, assume-se BRL."
+**O que não está claro:** isso vale apenas para a conversão, ou também deve afetar
+se `valor` pode ser escrito em outra moeda implícita sem o campo `moeda`?
+**Decisão:** se `moeda` estiver ausente, o valor é interpretado como BRL. O campo
+`moeda` é obrigatório apenas quando a despesa estiver em outra moeda.
+**Justificativa:** essa é a leitura mais direta de um campo opcional; não há
+motivo para inferir uma moeda diferente sem que ela esteja declarada.
+**Regra afetada:** RN-012
 
 ### AMB-005 — Critério e tratamento de duplicatas
 

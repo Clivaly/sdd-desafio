@@ -96,8 +96,30 @@
 
 ## Fase 5 — Envelope (criar no Dia 2)
 
-<Novas tasks a partir da mudança de requisito. Numeração continua de T-016 em
-diante — não renumerar as tasks acima.>
+- [x] **T-016** — Política por centro de custo carregada de arquivo externo
+  - **Atende:** item A do envelope, leitura de `envelope/politica-v4.json`
+  - **Aceite:** `test_politica_por_centro_custo_carrega_limites_externos` e `test_politica_fallback_para_padrao`
+  - **Commit:** `feat(T-016): carregar política por centro de custo de envelope v4`
+
+- [ ] **T-017** — Conversão de despesas internacionais para BRL usando taxa da data
+  - **Atende:** item B do envelope, leitura de `envelope/cambio.json`
+  - **Aceite:** `test_converte_euro_para_brl`, `test_moeda_ausente_assume_brl`, `test_recusa_moeda_nao_suportada`, `test_recusa_sem_taxa_de_cambio`
+  - **Commit:**
+
+- [ ] **T-018** — Adaptação das regras de limite à política dinâmica e novos limites/ categorias
+  - **Atende:** item A do envelope, categorias variáveis por centro de custo e limite zero para `hospedagem` em `CC-ENG-PLATAFORMA`
+  - **Aceite:** `test_representacao_reembolsavel_em_cc_comercial`, `test_hospedagem_cc_eng_plataforma_recusa`, `test_centro_desconhecido_usa_padrao`
+  - **Commit:**
+
+- [ ] **T-019** — Atualizar `spec.md`, `plan.md`, `DECISIONS.md`, `tasks.md` e documentação com os novos requisitos do envelope
+  - **Atende:** linha 35-39 do envelope, processar a mudança antes de codificar
+  - **Aceite:** `spec.md` e `tasks.md` refletem o envelope; `DECISIONS.md` registra a mudança; `envelope/*` está versionado
+  - **Commit:**
+
+- [ ] **T-020** — Testes e validação ponta a ponta do envelope com `envelope/despesas-envelope.json` e `envelope/despesas-envelope-cc-desconhecido.json`
+  - **Atende:** garantir que a nova política e conversão funcionam em casos reais do envelope
+  - **Aceite:** `test_envelope_principal` e `test_envelope_cc_desconhecido` passam
+  - **Commit:**
 
 ---
 
