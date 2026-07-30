@@ -82,7 +82,7 @@
   - **Aceite:** `test_motor_resumo_bate_com_soma_dos_itens` — para o conjunto de exemplo, `resumo.total_reembolsavel` é igual à soma de `valor_reembolsado` de todos os itens
   - **Commit:**
 
-- [ ] **T-014** — CLI `calcular --input <arquivo> --output <arquivo>`
+- [x] **T-014** — CLI `calcular --input <arquivo> --output <arquivo>`
   - **Atende:** interface fixa do desafio (`DESAFIO.md`)
   - **Aceite:** `test_cli_end_to_end` — roda o comando com `exemplos/despesas-exemplo.json` e o arquivo de saída tem 14 itens e é JSON válido
   - **Commit:**
