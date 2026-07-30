@@ -38,7 +38,7 @@
   - **Aceite:** `test_rn008_categoria_fora_politica_recusa` (`d-005`, `coworking`)
   - **Commit:**
 
-- [ ] **T-006** — RN-007: despesa fora do período de competência → recusa integral
+- [x] **T-006** — RN-007: despesa fora do período de competência → recusa integral
   - **Atende:** RN-007, AMB-006
   - **Aceite:** `test_rn007_fora_periodo_competencia_recusa` (`d-008`)
   - **Commit:**
