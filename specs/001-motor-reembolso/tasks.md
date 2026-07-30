@@ -70,7 +70,7 @@
   - **Aceite:** `test_rn010_hospedagem_multi_diaria_limite_unico` (`d-010`, R$480,00 → R$250,00 reembolsado)
   - **Commit:**
 
-- [ ] **T-012** — RN-005: ampliação por viagem — implementada como regra desativada (documentar por que não altera nenhum resultado nesta versão)
+- [x] **T-012** — RN-005: ampliação por viagem — implementada como regra desativada (documentar por que não altera nenhum resultado nesta versão)
   - **Atende:** RN-005, AMB-004
   - **Aceite:** `test_rn005_sem_dado_viagem_nenhum_limite_ampliado` — roda o conjunto de exemplo inteiro e garante que nenhum item tem `RN-005` em `regras_aplicadas`
   - **Commit:**

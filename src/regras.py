@@ -99,6 +99,16 @@ def rn010_limite_por_diaria_hospedagem(
     )
 
 
+def rn005_ampliacao_limites_viagem(
+    despesa: Despesa,
+    politica: Politica,
+) -> Optional[ResultadoItem]:
+    # Esta regra existe na política, mas a entrada não traz nenhum campo que
+    # indique se o colaborador está em viagem. Portanto, ela não altera nenhum
+    # resultado nesta versão.
+    return None
+
+
 def rn007_fora_periodo_competencia(despesa: Despesa, periodo: Periodo) -> Optional[ResultadoItem]:
     if despesa.data < periodo.inicio or despesa.data > periodo.fim:
         return ResultadoItem(
