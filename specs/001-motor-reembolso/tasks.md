@@ -43,7 +43,7 @@
   - **Aceite:** `test_rn007_fora_periodo_competencia_recusa` (`d-008`)
   - **Commit:**
 
-- [ ] **T-007** — RN-009: valor negativo → ignorado, não entra em nenhuma agregação
+- [x] **T-007** — RN-009: valor negativo → ignorado, não entra em nenhuma agregação
   - **Atende:** RN-009, AMB-010
   - **Aceite:** `test_rn009_valor_negativo_ignorado` (`d-009`)
   - **Commit:**

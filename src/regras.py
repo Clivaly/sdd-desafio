@@ -33,3 +33,17 @@ def rn008_categoria_fora_politica(despesa: Despesa, politica: Politica) -> Optio
             regras_aplicadas=["RN-008"],
         )
     return None
+
+
+def rn009_valor_negativo_ignorado(despesa: Despesa) -> Optional[ResultadoItem]:
+    if despesa.valor < Decimal("0.00"):
+        return ResultadoItem(
+            id=despesa.id,
+            categoria=despesa.categoria,
+            valor_lancado=despesa.valor,
+            valor_reembolsado=Decimal("0.00"),
+            status="ignorado",
+            motivo="estorno",
+            regras_aplicadas=["RN-009"],
+        )
+    return None
