@@ -26,7 +26,7 @@
   - **Aceite:** `test_serializa_resultado_item` — gera JSON com todos os campos do schema de saída
   - **Commit:** `feat(T-003): adiciona modelo de saída e serialização JSON`
 
-- [ ] **T-004** — Config da política como dados (`politica.py`): limites de alimentação, transporte, hospedagem, threshold de nota fiscal, multiplicador de viagem
+- [x] **T-004** — Config da política como dados (`politica.py`): limites de alimentação, transporte, hospedagem, threshold de nota fiscal, multiplicador de viagem
   - **Atende:** RN-001, RN-002, RN-004, RN-005, RN-010
   - **Aceite:** `test_politica_valores_batem_com_spec` — cada constante importada é igual ao valor citado na spec
   - **Commit:** `feat(T-004): define política como dados com limites e multiplicador`
