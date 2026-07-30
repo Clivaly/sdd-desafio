@@ -26,6 +26,22 @@ Ordem cronológica inversa: a mais recente primeiro.
 
 ---
 
+## D-003 — Atualização da documentação de envelope · 2026-07-30
+
+**Gatilho:** conclusão da task T-019 para refletir formalmente os novos requisitos do envelope v4.
+
+**O que mudou na spec:** `spec.md` agora documenta explicitamente a obrigatoriedade opcional de `despesas[].moeda`, o uso de taxa de câmbio por data e o fato de que a política é carregada por `colaborador.centro_custo` com fallback para `padrao`.
+
+**Por quê:** garantir que o artefato de especificação esteja alinhado com o comportamento implementado para o envelope e possa ser usado como referência única para validação e testes.
+
+**O que isso invalidou:** a versão anterior da spec que assumia política fixa no código e todas as despesas em BRL.
+
+**Tasks afetadas:** T-019.
+
+**Custo:** 1 task de documentação concluída, 3 arquivos de especificação atualizados e uma entrada de decisão adicionada.
+
+---
+
 ## D-001 — <título curto> · `<data>`
 
 **Gatilho:**

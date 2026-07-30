@@ -1,6 +1,6 @@
 # Spec — Motor de Cálculo de Reembolso
 
-**Versão:** 1.0 · **Status:** rascunho (proposto por Claude, pendente de revisão do autor) · **Última alteração:** `<preencher data>`
+**Versão:** 1.0 · **Status:** rascunho (proposto por Claude, pendente de revisão do autor) · **Última alteração:** 2026-07-30
 
 > **Regra de ouro deste arquivo:** ele descreve o QUÊ e o PORQUÊ. Nenhuma linha
 > aqui pode citar linguagem, biblioteca, classe, função ou estrutura de pasta.
