@@ -115,12 +115,11 @@
   - **Atende:** linha 35-39 do envelope, processar a mudança antes de codificar
   - **Aceite:** `spec.md` e `tasks.md` refletem o envelope; `DECISIONS.md` registra a mudança; `envelope/*` está versionado
   - **Commit:** `docs(T-019): documentar novos requisitos do envelope v4`
-  - **Commit:**
 
-- [ ] **T-020** — Testes e validação ponta a ponta do envelope com `envelope/despesas-envelope.json` e `envelope/despesas-envelope-cc-desconhecido.json`
+- [x] **T-020** — Testes e validação ponta a ponta do envelope com `envelope/despesas-envelope.json` e `envelope/despesas-envelope-cc-desconhecido.json`
   - **Atende:** garantir que a nova política e conversão funcionam em casos reais do envelope
   - **Aceite:** `test_envelope_principal` e `test_envelope_cc_desconhecido` passam
-  - **Commit:**
+  - **Commit:** `feat(T-020): validar envelope ponta a ponta com testes de cenário reais`
 
 ---
 

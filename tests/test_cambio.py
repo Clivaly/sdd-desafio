@@ -125,3 +125,50 @@ def test_recusa_sem_taxa_de_cambio_para_data(tmp_path):
     assert resultado.itens[0].status == "recusado"
     assert resultado.itens[0].motivo == "taxa de câmbio indisponível"
     assert resultado.itens[0].regras_aplicadas == ["RN-012"]
+
+
+def test_envelope_principal(tmp_path):
+    cambio_path = Path(__file__).resolve().parents[1] / "envelope" / "cambio.json"
+    politica_path = Path(__file__).resolve().parents[1] / "envelope" / "politica-v4.json"
+    entrada_path = Path(__file__).resolve().parents[1] / "envelope" / "despesas-envelope.json"
+
+    colaborador, periodo, despesas = carregar_entrada(entrada_path, cambio_path)
+    politica = Politica.carregar_por_centro_custo(politica_path, colaborador.centro_custo)
+    resultado = calcular_resultado(colaborador, periodo, despesas, politica)
+
+    assert resultado.resumo["total_despesas"] == 10
+    assert resultado.resumo["total_valor_lancado"] == Decimal("2363.72")
+    assert resultado.resumo["total_reembolsavel"] == Decimal("1053.26")
+    assert resultado.resumo["total_recusado"] == Decimal("1310.46")
+
+    item_por_id = {item.id: item for item in resultado.itens}
+    assert item_por_id["e-001"].status == "parcial"
+    assert item_por_id["e-001"].valor_reembolsado == Decimal("300.00")
+    assert item_por_id["e-001"].regras_aplicadas == ["RN-011"]
+
+    assert item_por_id["e-004"].status == "recusado"
+    assert item_por_id["e-004"].motivo == "taxa de câmbio indisponível"
+    assert item_por_id["e-004"].regras_aplicadas == ["RN-012"]
+
+    assert item_por_id["e-007"].status == "parcial"
+    assert item_por_id["e-007"].valor_reembolsado == Decimal("400.00")
+
+
+def test_envelope_cc_desconhecido(tmp_path):
+    cambio_path = Path(__file__).resolve().parents[1] / "envelope" / "cambio.json"
+    politica_path = Path(__file__).resolve().parents[1] / "envelope" / "politica-v4.json"
+    entrada_path = Path(__file__).resolve().parents[1] / "envelope" / "despesas-envelope-cc-desconhecido.json"
+
+    colaborador, periodo, despesas = carregar_entrada(entrada_path, cambio_path)
+    politica = Politica.carregar_por_centro_custo(politica_path, colaborador.centro_custo)
+    resultado = calcular_resultado(colaborador, periodo, despesas, politica)
+
+    assert resultado.resumo["total_despesas"] == 4
+    assert resultado.resumo["total_valor_lancado"] == Decimal("623.76")
+    assert resultado.resumo["total_reembolsavel"] == Decimal("373.76")
+    assert resultado.resumo["total_recusado"] == Decimal("250.00")
+
+    item_por_id = {item.id: item for item in resultado.itens}
+    assert item_por_id["f-003"].status == "recusado"
+    assert item_por_id["f-003"].motivo == "categoria fora da política"
+    assert item_por_id["f-004"].valor_reembolsado == Decimal("65.76")
