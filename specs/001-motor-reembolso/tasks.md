@@ -48,7 +48,7 @@
   - **Aceite:** `test_rn009_valor_negativo_ignorado` (`d-009`)
   - **Commit:**
 
-- [ ] **T-008** — RN-006: detecção de duplicata (mesma data, categoria, fornecedor, valor) → recusa a partir da segunda ocorrência
+- [x] **T-008** — RN-006: detecção de duplicata (mesma data, categoria, fornecedor, valor) → recusa a partir da segunda ocorrência
   - **Atende:** RN-006, AMB-005
   - **Aceite:** `test_rn006_duplicata_recusa_segunda_ocorrencia` (`d-006` aprovado, `d-007` recusado)
   - **Commit:**

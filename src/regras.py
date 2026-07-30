@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Sequence
 
 from .modelos import Despesa, Periodo, ResultadoItem
 from .politica import Politica
@@ -18,6 +18,26 @@ def rn007_fora_periodo_competencia(despesa: Despesa, periodo: Periodo) -> Option
             motivo="fora do período de competência",
             regras_aplicadas=["RN-007"],
         )
+    return None
+
+
+def rn006_duplicata(despesa: Despesa, despesas_anteriores: Sequence[Despesa]) -> Optional[ResultadoItem]:
+    for anterior in despesas_anteriores:
+        if (
+            despesa.data == anterior.data
+            and despesa.categoria == anterior.categoria
+            and despesa.fornecedor == anterior.fornecedor
+            and despesa.valor == anterior.valor
+        ):
+            return ResultadoItem(
+                id=despesa.id,
+                categoria=despesa.categoria,
+                valor_lancado=despesa.valor,
+                valor_reembolsado=Decimal("0.00"),
+                status="recusado",
+                motivo="duplicata",
+                regras_aplicadas=["RN-006"],
+            )
     return None
 
 
