@@ -60,7 +60,7 @@
 
 ## Fase 3 — Regras de cálculo (ordem 7 da spec)
 
-- [ ] **T-010** — RN-001/RN-002: agregação diária por categoria (alimentação e transporte urbano) + RN-003: corte parcial do excedente
+- [x] **T-010** — RN-001/RN-002: agregação diária por categoria (alimentação e transporte urbano) + RN-003: corte parcial do excedente
   - **Atende:** RN-001, RN-002, RN-003, AMB-001, AMB-002
   - **Aceite:** `test_rn001_soma_diaria_alimentacao_corta_excedente` (`d-001`+`d-002` → R$60,00 no dia), `test_rn002_transporte_urbano_corta_excedente` (`d-003` isolado → R$80,00)
   - **Commit:**

@@ -34,6 +34,7 @@ class Despesa:
 @dataclass(frozen=True)
 class ResultadoItem:
     id: str
+    data: date
     categoria: str
     valor_lancado: Decimal
     valor_reembolsado: Decimal
