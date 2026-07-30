@@ -53,7 +53,7 @@
   - **Aceite:** `test_rn006_duplicata_recusa_segunda_ocorrencia` (`d-006` aprovado, `d-007` recusado)
   - **Commit:**
 
-- [ ] **T-009** — RN-004: nota fiscal obrigatória acima de R$100 (fronteira exclusiva) → ausência recusa integral
+- [x] **T-009** — RN-004: nota fiscal obrigatória acima de R$100 (fronteira exclusiva) → ausência recusa integral
   - **Atende:** RN-004, AMB-003, AMB-012
   - **Aceite:** `test_rn004_limite_exato_nao_exige_nf` (`d-003`, R$100,00), `test_rn004_acima_limite_sem_nf_recusa` (`d-004`, R$100,01)
   - **Commit:**

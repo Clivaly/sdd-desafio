@@ -41,6 +41,20 @@ def rn006_duplicata(despesa: Despesa, despesas_anteriores: Sequence[Despesa]) ->
     return None
 
 
+def rn004_nota_fiscal_obrigatoria(despesa: Despesa) -> Optional[ResultadoItem]:
+    if despesa.valor > Decimal("100.00") and not despesa.tem_nota_fiscal:
+        return ResultadoItem(
+            id=despesa.id,
+            categoria=despesa.categoria,
+            valor_lancado=despesa.valor,
+            valor_reembolsado=Decimal("0.00"),
+            status="recusado",
+            motivo="nota fiscal obrigatória ausente",
+            regras_aplicadas=["RN-004"],
+        )
+    return None
+
+
 def rn008_categoria_fora_politica(despesa: Despesa, politica: Politica) -> Optional[ResultadoItem]:
     if despesa.categoria not in politica.categorias_reembolsaveis:
         return ResultadoItem(
