@@ -106,10 +106,11 @@
   - **Aceite:** `test_converte_euro_para_brl`, `test_moeda_ausente_assume_brl`, `test_recusa_moeda_nao_suportada`, `test_recusa_sem_taxa_de_cambio`
   - **Commit:**
 
-- [ ] **T-018** — Adaptação das regras de limite à política dinâmica e novos limites/ categorias
+- [x] **T-018** — Adaptação das regras de limite à política dinâmica e novos limites/ categorias
   - **Atende:** item A do envelope, categorias variáveis por centro de custo e limite zero para `hospedagem` em `CC-ENG-PLATAFORMA`
   - **Aceite:** `test_representacao_reembolsavel_em_cc_comercial`, `test_hospedagem_cc_eng_plataforma_recusa`, `test_centro_desconhecido_usa_padrao`
   - **Commit:**
+**
 
 - [ ] **T-019** — Atualizar `spec.md`, `plan.md`, `DECISIONS.md`, `tasks.md` e documentação com os novos requisitos do envelope
   - **Atende:** linha 35-39 do envelope, processar a mudança antes de codificar

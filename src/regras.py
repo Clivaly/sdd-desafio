@@ -43,6 +43,32 @@ def _construir_resultado_limite_diario(
     )
 
 
+def _aplicar_limite_por_categoria(
+    despesa: Despesa,
+    politica: Politica,
+    descricao_categoria: str,
+    regra_id: str,
+    itens_anteriores: Sequence[ResultadoItem] | None = None,
+) -> Optional[ResultadoItem]:
+    if despesa.categoria not in politica.categorias_reembolsaveis:
+        return None
+
+    limite = politica.limite_para_categoria(despesa.categoria)
+    if politica.periodicidade_para_categoria(despesa.categoria) == "dia":
+        consumido = _soma_reembolsado_anteriores(despesa, itens_anteriores or [])
+        disponivel = max(Decimal("0.00"), limite - consumido)
+        valor_reembolsado = min(despesa.valor, disponivel)
+    else:
+        valor_reembolsado = min(despesa.valor, limite)
+
+    return _construir_resultado_limite_diario(
+        despesa,
+        valor_reembolsado,
+        descricao_categoria,
+        regra_id,
+    )
+
+
 def rn001_limite_diario_alimentacao(
     despesa: Despesa,
     itens_anteriores: Sequence[ResultadoItem],
@@ -51,15 +77,12 @@ def rn001_limite_diario_alimentacao(
     if despesa.categoria != "alimentacao":
         return None
 
-    consumido = _soma_reembolsado_anteriores(despesa, itens_anteriores)
-    disponivel = max(Decimal("0.00"), politica.limite_alimentacao_diaria - consumido)
-    valor_reembolsado = min(despesa.valor, disponivel)
-
-    return _construir_resultado_limite_diario(
+    return _aplicar_limite_por_categoria(
         despesa,
-        valor_reembolsado,
+        politica,
         "alimentacao",
         "RN-001",
+        itens_anteriores,
     )
 
 
@@ -71,15 +94,12 @@ def rn002_limite_diario_transporte(
     if despesa.categoria != "transporte_urbano":
         return None
 
-    consumido = _soma_reembolsado_anteriores(despesa, itens_anteriores)
-    disponivel = max(Decimal("0.00"), politica.limite_transporte_urbano_diario - consumido)
-    valor_reembolsado = min(despesa.valor, disponivel)
-
-    return _construir_resultado_limite_diario(
+    return _aplicar_limite_por_categoria(
         despesa,
-        valor_reembolsado,
+        politica,
         "transporte urbano",
         "RN-002",
+        itens_anteriores,
     )
 
 
@@ -90,12 +110,33 @@ def rn010_limite_por_diaria_hospedagem(
     if despesa.categoria != "hospedagem":
         return None
 
-    valor_reembolsado = min(despesa.valor, politica.limite_hospedagem_diaria)
-    return _construir_resultado_limite_diario(
+    return _aplicar_limite_por_categoria(
         despesa,
-        valor_reembolsado,
+        politica,
         "hospedagem",
         "RN-010",
+    )
+
+
+def rn011_limite_categoria_dinamica(
+    despesa: Despesa,
+    itens_anteriores: Sequence[ResultadoItem],
+    politica: Politica,
+) -> Optional[ResultadoItem]:
+    if despesa.categoria in {"alimentacao", "transporte_urbano", "hospedagem"}:
+        return None
+    if despesa.categoria not in politica.categorias_reembolsaveis:
+        return None
+
+    descricao_categoria = despesa.categoria.replace("_", " ")
+    regra_id = "RN-011"
+
+    return _aplicar_limite_por_categoria(
+        despesa,
+        politica,
+        descricao_categoria,
+        regra_id,
+        itens_anteriores,
     )
 
 

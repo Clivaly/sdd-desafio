@@ -15,6 +15,7 @@ from .regras import (
     rn008_categoria_fora_politica,
     rn009_valor_negativo_ignorado,
     rn010_limite_por_diaria_hospedagem,
+    rn011_limite_categoria_dinamica,
     rn012_taxa_cambio_indisponivel,
 )
 
@@ -67,6 +68,10 @@ def _processar_despesa(
         return regra
 
     regra = rn010_limite_por_diaria_hospedagem(despesa, politica)
+    if regra is not None:
+        return regra
+
+    regra = rn011_limite_categoria_dinamica(despesa, itens_anteriores, politica)
     if regra is not None:
         return regra
 

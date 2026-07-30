@@ -1,12 +1,22 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 from pathlib import Path
 
 
 DEFAULT_CATEGORIAS_REEMBOLSAVEIS = frozenset({"alimentacao", "transporte_urbano", "hospedagem"})
+DEFAULT_LIMITES_POR_CATEGORIA = {
+    "alimentacao": Decimal("60.00"),
+    "transporte_urbano": Decimal("80.00"),
+    "hospedagem": Decimal("250.00"),
+}
+DEFAULT_PERIODICIDADE_POR_CATEGORIA = {
+    "alimentacao": "dia",
+    "transporte_urbano": "dia",
+    "hospedagem": "diaria",
+}
 
 
 @dataclass(frozen=True)
@@ -17,6 +27,14 @@ class Politica:
     valor_nota_fiscal_obrigatoria: Decimal = Decimal("100.00")
     multiplicador_viagem: Decimal = Decimal("1.50")
     categorias_reembolsaveis: set[str] = DEFAULT_CATEGORIAS_REEMBOLSAVEIS
+    limites_por_categoria: dict[str, Decimal] = field(default_factory=lambda: dict(DEFAULT_LIMITES_POR_CATEGORIA))
+    periodicidade_por_categoria: dict[str, str] = field(default_factory=lambda: dict(DEFAULT_PERIODICIDADE_POR_CATEGORIA))
+
+    def limite_para_categoria(self, categoria: str) -> Decimal:
+        return self.limites_por_categoria.get(categoria, Decimal("0.00"))
+
+    def periodicidade_para_categoria(self, categoria: str) -> str:
+        return self.periodicidade_por_categoria.get(categoria, "dia")
 
     @classmethod
     def carregar_por_centro_custo(cls, path: str | Path, centro_custo: str) -> "Politica":
@@ -36,9 +54,20 @@ class Politica:
         limite_transporte = Decimal(str(politica_centro.get("transporte_urbano", {}).get("limite", 0.00)))
         limite_hospedagem = Decimal(str(politica_centro.get("hospedagem", {}).get("limite", 0.00)))
 
+        limites_por_categoria = {
+            categoria: Decimal(str(config.get("limite", "0.00")))
+            for categoria, config in politica_centro.items()
+        }
+        periodicidade_por_categoria = {
+            categoria: config.get("periodicidade", "dia")
+            for categoria, config in politica_centro.items()
+        }
+
         categorias = set(politica_centro.keys())
         if not categorias:
             categorias = set(DEFAULT_CATEGORIAS_REEMBOLSAVEIS)
+            limites_por_categoria = dict(DEFAULT_LIMITES_POR_CATEGORIA)
+            periodicidade_por_categoria = dict(DEFAULT_PERIODICIDADE_POR_CATEGORIA)
 
         return cls(
             limite_alimentacao_diaria=limite_alimentacao,
@@ -47,6 +76,8 @@ class Politica:
             valor_nota_fiscal_obrigatoria=nota_fiscal_obrigatoria,
             multiplicador_viagem=multiplicador_viagem,
             categorias_reembolsaveis=categorias,
+            limites_por_categoria=limites_por_categoria,
+            periodicidade_por_categoria=periodicidade_por_categoria,
         )
 
 

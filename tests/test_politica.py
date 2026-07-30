@@ -1,6 +1,9 @@
+from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
+from src.modelos import Colaborador, Despesa, Periodo
+from src.motor import calcular_resultado
 from src.politica import DEFAULT_POLITICA, Politica
 
 
@@ -24,7 +27,56 @@ def test_politica_por_centro_custo_carrega_limites_externos():
     assert "representacao" in politica.categorias_reembolsaveis
 
 
-def test_politica_fallback_para_padrao_quando_centro_desconhecido():
+def test_representacao_reembolsavel_em_cc_comercial():
+    envelope_path = Path("envelope/politica-v4.json")
+    politica = Politica.carregar_por_centro_custo(envelope_path, "CC-COMERCIAL")
+    colaborador = Colaborador(id="c-1", nome="Teste", centro_custo="CC-COMERCIAL")
+    periodo = Periodo(competencia="2026-07", inicio=date(2026, 7, 1), fim=date(2026, 7, 31))
+    despesas = [
+        Despesa(
+            id="t18-001",
+            data=date(2026, 7, 14),
+            categoria="representacao",
+            descricao="Almoço com cliente",
+            fornecedor="Restaurante",
+            valor=Decimal("120.00"),
+            tem_nota_fiscal=True,
+        )
+    ]
+
+    resultado = calcular_resultado(colaborador, periodo, despesas, politica)
+
+    assert resultado.itens[0].status == "aprovado"
+    assert resultado.itens[0].valor_reembolsado == Decimal("120.00")
+    assert resultado.itens[0].regras_aplicadas == ["RN-011"]
+
+
+def test_hospedagem_cc_eng_plataforma_recusa():
+    envelope_path = Path("envelope/politica-v4.json")
+    politica = Politica.carregar_por_centro_custo(envelope_path, "CC-ENG-PLATAFORMA")
+    colaborador = Colaborador(id="c-2", nome="Teste", centro_custo="CC-ENG-PLATAFORMA")
+    periodo = Periodo(competencia="2026-07", inicio=date(2026, 7, 1), fim=date(2026, 7, 31))
+    despesas = [
+        Despesa(
+            id="t18-002",
+            data=date(2026, 7, 10),
+            categoria="hospedagem",
+            descricao="Hospedagem interna",
+            fornecedor="Hotel",
+            valor=Decimal("150.00"),
+            tem_nota_fiscal=True,
+        )
+    ]
+
+    resultado = calcular_resultado(colaborador, periodo, despesas, politica)
+
+    assert resultado.itens[0].status == "recusado"
+    assert resultado.itens[0].valor_reembolsado == Decimal("0.00")
+    assert resultado.itens[0].regras_aplicadas == ["RN-010"]
+    assert resultado.itens[0].motivo == "excedente do limite diário de hospedagem"
+
+
+def test_centro_desconhecido_usa_padrao():
     envelope_path = Path("envelope/politica-v4.json")
     politica = Politica.carregar_por_centro_custo(envelope_path, "CC-SUPORTE-N2")
 
