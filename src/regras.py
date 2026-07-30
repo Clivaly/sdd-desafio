@@ -160,6 +160,21 @@ def rn004_nota_fiscal_obrigatoria(despesa: Despesa) -> Optional[ResultadoItem]:
     return None
 
 
+def rn012_taxa_cambio_indisponivel(despesa: Despesa) -> Optional[ResultadoItem]:
+    if despesa.moeda != "BRL" and despesa.taxa_de_cambio is None:
+        return ResultadoItem(
+            id=despesa.id,
+            data=despesa.data,
+            categoria=despesa.categoria,
+            valor_lancado=despesa.valor,
+            valor_reembolsado=Decimal("0.00"),
+            status="recusado",
+            motivo="taxa de câmbio indisponível",
+            regras_aplicadas=["RN-012"],
+        )
+    return None
+
+
 def rn008_categoria_fora_politica(despesa: Despesa, politica: Politica) -> Optional[ResultadoItem]:
     if despesa.categoria not in politica.categorias_reembolsaveis:
         return ResultadoItem(

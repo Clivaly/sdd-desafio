@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from .modelos import Colaborador, Despesa, Periodo, Resultado, ResultadoItem
 
@@ -67,6 +68,12 @@ def _parse_despesa(data: Any) -> Despesa:
         raise ValueError("Cada item de 'despesas' deve ser um objeto")
 
     categoria = _normalize_categoria(_parse_string(data.get("categoria"), "despesas[].categoria"))
+    moeda_raw = data.get("moeda")
+    if moeda_raw is None:
+        moeda = "BRL"
+    else:
+        moeda = _parse_string(moeda_raw, "despesas[].moeda").strip().upper()
+
     return Despesa(
         id=_parse_string(data.get("id"), "despesas[].id"),
         data=_parse_date(data.get("data"), "despesas[].data"),
@@ -74,8 +81,50 @@ def _parse_despesa(data: Any) -> Despesa:
         descricao=_parse_string(data.get("descricao"), "despesas[].descricao"),
         fornecedor=_parse_string(data.get("fornecedor"), "despesas[].fornecedor"),
         valor=_parse_decimal(data.get("valor"), "despesas[].valor"),
+        moeda=moeda,
+        taxa_de_cambio=None,
         tem_nota_fiscal=_parse_bool(data.get("tem_nota_fiscal"), "despesas[].tem_nota_fiscal"),
     )
+
+
+def _load_taxas_cambio(path: Path) -> Dict[str, Dict[str, Decimal]]:
+    with path.open("r", encoding="utf-8") as handle:
+        raw = json.load(handle)
+
+    taxas_raw = raw.get("taxas", {})
+    taxas: Dict[str, Dict[str, Decimal]] = {}
+    for data_str, cotacoes in taxas_raw.items():
+        taxas[data_str] = {moeda.upper(): Decimal(str(valor)) for moeda, valor in cotacoes.items()}
+    return taxas
+
+
+def _obter_taxa(taxas: Dict[str, Dict[str, Decimal]], data: date, moeda: str) -> Optional[Decimal]:
+    if moeda == "BRL":
+        return Decimal("1.00")
+
+    dia = data.isoformat()
+    return taxas.get(dia, {}).get(moeda)
+
+
+def _aplicar_cambio(despesas: List[Despesa], cambio_path: Path) -> List[Despesa]:
+    taxas = _load_taxas_cambio(cambio_path)
+    despesas_com_cambio: List[Despesa] = []
+
+    for despesa in despesas:
+        taxa = _obter_taxa(taxas, despesa.data, despesa.moeda)
+        if taxa is None and despesa.moeda == "BRL":
+            taxa = Decimal("1.00")
+
+        if taxa is not None:
+            valor_brl = despesa.valor * taxa
+            valor_brl = valor_brl.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            despesas_com_cambio.append(
+                replace(despesa, valor=valor_brl, taxa_de_cambio=taxa)
+            )
+        else:
+            despesas_com_cambio.append(despesa)
+
+    return despesas_com_cambio
 
 
 def parse_entrada(raw: Any) -> Tuple[Colaborador, Periodo, List[Despesa]]:
@@ -139,8 +188,12 @@ def escrever_saida(resultado: Resultado, path: str | Path) -> None:
         json.dump(resultado_para_dict(resultado), handle, default=_decimal_default, ensure_ascii=False, indent=2)
 
 
-def carregar_entrada(path: str | Path) -> Tuple[Colaborador, Periodo, List[Despesa]]:
+def carregar_entrada(path: str | Path, cambio_path: str | Path | None = None) -> Tuple[Colaborador, Periodo, List[Despesa]]:
     path_obj = Path(path)
     with path_obj.open("r", encoding="utf-8") as handle:
         raw = json.load(handle)
-    return parse_entrada(raw)
+
+    colaborador, periodo, despesas = parse_entrada(raw)
+    if cambio_path is not None:
+        despesas = _aplicar_cambio(despesas, Path(cambio_path))
+    return colaborador, periodo, despesas

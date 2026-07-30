@@ -101,7 +101,7 @@
   - **Aceite:** `test_politica_por_centro_custo_carrega_limites_externos` e `test_politica_fallback_para_padrao`
   - **Commit:** `feat(T-016): carregar política por centro de custo de envelope v4`
 
-- [ ] **T-017** — Conversão de despesas internacionais para BRL usando taxa da data
+- [x] **T-017** — Conversão de despesas internacionais para BRL usando taxa da data
   - **Atende:** item B do envelope, leitura de `envelope/cambio.json`
   - **Aceite:** `test_converte_euro_para_brl`, `test_moeda_ausente_assume_brl`, `test_recusa_moeda_nao_suportada`, `test_recusa_sem_taxa_de_cambio`
   - **Commit:**

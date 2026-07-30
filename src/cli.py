@@ -42,8 +42,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.print_help()
         return 1
 
-    colaborador, periodo, despesas = carregar_entrada(Path(args.input))
     package_root = Path(__file__).resolve().parents[1]
+    cambio_path = package_root / "envelope" / "cambio.json"
+    colaborador, periodo, despesas = carregar_entrada(
+        Path(args.input), cambio_path if cambio_path.exists() else None
+    )
     politica_path = package_root / "envelope" / "politica-v4.json"
     politica = (
         Politica.carregar_por_centro_custo(politica_path, colaborador.centro_custo)

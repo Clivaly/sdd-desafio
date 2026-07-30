@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 
 @dataclass(frozen=True)
@@ -28,7 +28,9 @@ class Despesa:
     descricao: str
     fornecedor: str
     valor: Decimal
-    tem_nota_fiscal: bool
+    moeda: str = "BRL"
+    taxa_de_cambio: Optional[Decimal] = None
+    tem_nota_fiscal: bool = False
 
 
 @dataclass(frozen=True)

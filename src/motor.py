@@ -15,6 +15,7 @@ from .regras import (
     rn008_categoria_fora_politica,
     rn009_valor_negativo_ignorado,
     rn010_limite_por_diaria_hospedagem,
+    rn012_taxa_cambio_indisponivel,
 )
 
 
@@ -46,6 +47,10 @@ def _processar_despesa(
         return regra
 
     regra = rn006_duplicata(despesa, despesas_anteriores)
+    if regra is not None:
+        return regra
+
+    regra = rn012_taxa_cambio_indisponivel(despesa)
     if regra is not None:
         return regra
 
