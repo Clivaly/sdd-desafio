@@ -65,7 +65,7 @@
   - **Aceite:** `test_rn001_soma_diaria_alimentacao_corta_excedente` (`d-001`+`d-002` → R$60,00 no dia), `test_rn002_transporte_urbano_corta_excedente` (`d-003` isolado → R$80,00)
   - **Commit:**
 
-- [ ] **T-011** — RN-010: limite por diária de hospedagem (lançamento tratado como unidade única) + corte parcial
+- [x] **T-011** — RN-010: limite por diária de hospedagem (lançamento tratado como unidade única) + corte parcial
   - **Atende:** RN-010, AMB-011
   - **Aceite:** `test_rn010_hospedagem_multi_diaria_limite_unico` (`d-010`, R$480,00 → R$250,00 reembolsado)
   - **Commit:**

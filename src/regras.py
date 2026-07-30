@@ -83,6 +83,22 @@ def rn002_limite_diario_transporte(
     )
 
 
+def rn010_limite_por_diaria_hospedagem(
+    despesa: Despesa,
+    politica: Politica,
+) -> Optional[ResultadoItem]:
+    if despesa.categoria != "hospedagem":
+        return None
+
+    valor_reembolsado = min(despesa.valor, politica.limite_hospedagem_diaria)
+    return _construir_resultado_limite_diario(
+        despesa,
+        valor_reembolsado,
+        "hospedagem",
+        "RN-010",
+    )
+
+
 def rn007_fora_periodo_competencia(despesa: Despesa, periodo: Periodo) -> Optional[ResultadoItem]:
     if despesa.data < periodo.inicio or despesa.data > periodo.fim:
         return ResultadoItem(
