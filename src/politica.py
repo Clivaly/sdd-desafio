@@ -11,6 +11,7 @@ class Politica:
     limite_hospedagem_diaria: Decimal = Decimal("250.00")
     valor_nota_fiscal_obrigatoria: Decimal = Decimal("100.00")
     multiplicador_viagem: Decimal = Decimal("1.50")
+    categorias_reembolsaveis: set[str] = frozenset({"alimentacao", "transporte_urbano", "hospedagem"})
 
 
 DEFAULT_POLITICA = Politica()

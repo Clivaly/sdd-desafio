@@ -33,7 +33,7 @@
 
 ## Fase 2 — Regras de negócio (elegibilidade, ordem 2–6 da spec)
 
-- [ ] **T-005** — RN-008: categoria fora da política → recusa integral
+- [x] **T-005** — RN-008: categoria fora da política → recusa integral
   - **Atende:** RN-008, AMB-007
   - **Aceite:** `test_rn008_categoria_fora_politica_recusa` (`d-005`, `coworking`)
   - **Commit:**
