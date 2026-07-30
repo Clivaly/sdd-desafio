@@ -6,7 +6,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from .modelos import Colaborador, Despesa, Periodo
+from .modelos import Colaborador, Despesa, Periodo, Resultado, ResultadoItem
 
 
 def _parse_string(value: Any, field_name: str) -> str:
@@ -91,6 +91,52 @@ def parse_entrada(raw: Any) -> Tuple[Colaborador, Periodo, List[Despesa]]:
 
     despesas = [_parse_despesa(item) for item in despesas_raw]
     return colaborador, periodo, despesas
+
+
+def _decimal_default(value: Any) -> Any:
+    if isinstance(value, Decimal):
+        return float(value.quantize(Decimal("0.01")))
+    raise TypeError(f"Object of type {value.__class__.__name__} is not JSON serializable")
+
+
+def resultado_item_para_dict(item: ResultadoItem) -> Dict[str, Any]:
+    return {
+        "id": item.id,
+        "categoria": item.categoria,
+        "valor_lancado": item.valor_lancado,
+        "valor_reembolsado": item.valor_reembolsado,
+        "status": item.status,
+        "motivo": item.motivo,
+        "regras_aplicadas": item.regras_aplicadas,
+    }
+
+
+def resultado_para_dict(resultado: Resultado) -> Dict[str, Any]:
+    return {
+        "colaborador": {
+            "id": resultado.colaborador.id,
+            "nome": resultado.colaborador.nome,
+            "centro_custo": resultado.colaborador.centro_custo,
+        },
+        "periodo": {
+            "competencia": resultado.periodo.competencia,
+            "inicio": resultado.periodo.inicio.isoformat(),
+            "fim": resultado.periodo.fim.isoformat(),
+        },
+        "resumo": {
+            "total_despesas": resultado.resumo["total_despesas"],
+            "total_valor_lancado": resultado.resumo["total_valor_lancado"],
+            "total_reembolsavel": resultado.resumo["total_reembolsavel"],
+            "total_recusado": resultado.resumo["total_recusado"],
+        },
+        "itens": [resultado_item_para_dict(item) for item in resultado.itens],
+    }
+
+
+def escrever_saida(resultado: Resultado, path: str | Path) -> None:
+    path_obj = Path(path)
+    with path_obj.open("w", encoding="utf-8") as handle:
+        json.dump(resultado_para_dict(resultado), handle, default=_decimal_default, ensure_ascii=False, indent=2)
 
 
 def carregar_entrada(path: str | Path) -> Tuple[Colaborador, Periodo, List[Despesa]]:

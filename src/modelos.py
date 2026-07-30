@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from typing import Any, Dict, List
 
 
 @dataclass(frozen=True)
@@ -28,3 +29,22 @@ class Despesa:
     fornecedor: str
     valor: Decimal
     tem_nota_fiscal: bool
+
+
+@dataclass(frozen=True)
+class ResultadoItem:
+    id: str
+    categoria: str
+    valor_lancado: Decimal
+    valor_reembolsado: Decimal
+    status: str
+    motivo: str
+    regras_aplicadas: List[str]
+
+
+@dataclass(frozen=True)
+class Resultado:
+    colaborador: Colaborador
+    periodo: Periodo
+    resumo: Dict[str, Any]
+    itens: List[ResultadoItem]
