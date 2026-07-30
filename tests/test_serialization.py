@@ -19,6 +19,7 @@ def test_serializa_resultado_item():
     itens = [
         ResultadoItem(
             id="d-001",
+            data=date(2026, 7, 2),
             categoria="alimentacao",
             valor_lancado=Decimal("72.50"),
             valor_reembolsado=Decimal("60.00"),

@@ -87,7 +87,7 @@
   - **Aceite:** `test_cli_end_to_end` — roda o comando com `exemplos/despesas-exemplo.json` e o arquivo de saída tem 14 itens e é JSON válido
   - **Commit:**
 
-- [ ] **T-015** — README com instruções de instalação, execução e testes
+- [x] **T-015** — README com instruções de instalação, execução e testes
   - **Atende:** requisito de entrega (`DESAFIO.md`, "O que entregar")
   - **Aceite:** seguir o README do zero (ambiente limpo) resulta em `resultado.json` gerado sem intervenção manual
   - **Commit:**

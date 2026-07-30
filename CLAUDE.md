@@ -1,10 +1,5 @@
 # CLAUDE.md
 
-> Este arquivo é lido pelo Claude Code no início de toda sessão. É onde moram as
-> convenções que você não quer repetir em todo prompt.
-> Substitua os `<...>` e apague o que não usar. Mantenha curto — CLAUDE.md longo
-> é CLAUDE.md ignorado.
-
 ## O projeto
 
 Motor de cálculo de reembolso de despesas corporativas. CLI que lê um JSON de
@@ -34,16 +29,29 @@ Se o que eu pedi não está coberto por nenhuma task, me avise em vez de impleme
 
 ## Stack e comandos
 
-- Linguagem: `<...>`
-- Rodar: `<comando>`
-- Testes: `<comando>`
-- Lint/format: `<comando>`
+- Linguagem: Python 3.11+
+- Rodar: `python -m src.cli calcular --input <arquivo> --output <arquivo>`
+- Testes: `python -m pytest`
+- Lint/format: `<preencher se adotar black/ruff>`
 
 ## Convenções de código
 
-- `<nomenclatura, estrutura de pastas, tratamento de erro, o que for relevante>`
-- Valores monetários: `<como são representados — decimal, centavos em inteiro, etc.>`
+- Núcleo de regras (`src/regras.py`, `src/politica.py`, `src/motor.py`) não
+  importa `json`, `argparse` nem faz I/O de arquivo — só recebe e devolve
+  objetos Python. Isso é a fronteira definida em `plan.md` seção 2; não a
+  quebre por conveniência.
+- Cada regra de negócio (`RN-00X`) é uma função independente, testável sem
+  as demais.
+- Valores monetários: sempre `decimal.Decimal`, nunca `float`, em qualquer
+  ponto do núcleo. Conversão para tipo serializável em JSON acontece só no
+  adaptador de saída.
+- Teste nomeado a partir do id da regra ou do caso de borda que cobre
+  (`test_rn004_...`, `test_d004_...`) — é o que fecha a rastreabilidade.
 
 ## Fora de escopo
 
-- `<o que este projeto explicitamente não faz — evita que o agente invente feature>`
+- Não infere "em viagem" de nenhum dado além de um campo explícito que ainda
+  não existe na entrada (ver `spec.md`, AMB-004).
+- Não faz parsing de linguagem natural sobre o campo `descricao`.
+- Não lida com múltiplos colaboradores/períodos numa mesma execução.
+- Não integra com sistemas de pagamento.
