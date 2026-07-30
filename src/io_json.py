@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
@@ -24,7 +24,8 @@ def _parse_bool(value: Any, field_name: str) -> bool:
 def _parse_decimal(value: Any, field_name: str) -> Decimal:
     if not isinstance(value, (int, float, str, Decimal)):
         raise ValueError(f"Campo '{field_name}' deve ser numérico")
-    return Decimal(str(value))
+    decimal_value = Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    return decimal_value
 
 
 def _parse_date(value: Any, field_name: str) -> date:
@@ -57,11 +58,15 @@ def _parse_periodo(data: Any) -> Periodo:
     )
 
 
+def _normalize_categoria(categoria: str) -> str:
+    return categoria.strip().lower()
+
+
 def _parse_despesa(data: Any) -> Despesa:
     if not isinstance(data, dict):
         raise ValueError("Cada item de 'despesas' deve ser um objeto")
 
-    categoria = _parse_string(data.get("categoria"), "despesas[].categoria")
+    categoria = _normalize_categoria(_parse_string(data.get("categoria"), "despesas[].categoria"))
     return Despesa(
         id=_parse_string(data.get("id"), "despesas[].id"),
         data=_parse_date(data.get("data"), "despesas[].data"),
