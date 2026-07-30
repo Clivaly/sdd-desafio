@@ -77,7 +77,7 @@
 
 ## Fase 4 — Saída e CLI
 
-- [ ] **T-013** — Motor: função que aplica o pipeline de regras na ordem da spec (seção 8) e monta `Resultado` com `resumo` agregado
+- [x] **T-013** — Motor: função que aplica o pipeline de regras na ordem da spec (seção 8) e monta `Resultado` com `resumo` agregado
   - **Atende:** spec seção 8, spec seção 4 (`resumo`)
   - **Aceite:** `test_motor_resumo_bate_com_soma_dos_itens` — para o conjunto de exemplo, `resumo.total_reembolsavel` é igual à soma de `valor_reembolsado` de todos os itens
   - **Commit:**
